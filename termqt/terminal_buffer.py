@@ -4,8 +4,11 @@ from enum import Enum
 from functools import partial
 from collections import deque
 
-from PyQt5.QtGui import QColor
-from PyQt5.QtCore import Qt, QMutex
+# from PyQt5.QtGui import QColor
+# from PyQt5.QtCore import Qt, QMutex
+# Pyside2
+from PySide2.QtGui import QColor
+from PySide2.QtCore import Qt, QMutex
 
 from .colors import colors8, colors16, colors256
 
@@ -14,7 +17,7 @@ DEFAULT_BG_COLOR = Qt.black
 
 
 class ControlChar(Enum):
-    NUL = 0   # Ctrl-@, null
+    NUL = 0   # Ctrl-@, null    
     SOH = 1   # Ctrl-A, start of heading
     STX = 2   # Ctrl-B, start of text, bash shortcut for left arrow key
     ETX = 3   # Ctrl-C, end of text
