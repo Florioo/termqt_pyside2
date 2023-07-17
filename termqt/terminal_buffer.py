@@ -855,9 +855,9 @@ class TerminalBuffer:
             _new_buffer.appendleft([None for x in range(row_len)])
             _new_wrap.appendleft(False)
 
-        while len(self._buffer) > self.maximum_line_history:
+        while len(_new_buffer) > self.maximum_line_history:
             _new_buffer.popleft()
-            self._line_wrapped_flags.popleft()
+            _new_wrap.popleft()
             cur_y -= 1
 
         self.row_len = row_len
