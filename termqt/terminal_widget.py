@@ -4,7 +4,7 @@ from enum import Enum
 
 from PySide2.QtWidgets import QWidget, QScrollBar
 from PySide2.QtGui import QPainter, QColor, QPalette, QFontDatabase, QPen, \
-    QFont, QFontInfo, QFontMetrics, QPixmap
+    QFont, QFontInfo, QFontMetrics, QPixmap, QKeyEvent
 from PySide2.QtCore import Qt, QTimer, QMutex, Signal
 
 from .terminal_buffer import TerminalBuffer, DEFAULT_BG_COLOR, \
@@ -424,7 +424,18 @@ class Terminal(TerminalBuffer, QWidget):
 
     def focusOutEvent(self, event):
         self._switch_cursor_blink(CursorState.UNFOCUSED, False)
-
+        
+    def event(self, event):
+        #Override the tab, so we dont lose focus
+        if (isinstance(event, QKeyEvent)):
+            if event.key() == Qt.Key_Tab:
+                self.input(b'\t')
+                return True
+            else:    
+                return super().event(event)
+        
+        return super().event(event)
+    
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()
