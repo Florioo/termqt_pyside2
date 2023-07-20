@@ -1,9 +1,9 @@
 import sys
 import logging
 import platform
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QScrollBar
-from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtGui import QFont
+from PySide2.QtWidgets import QApplication, QWidget, QHBoxLayout, QScrollBar
+from PySide2.QtCore import Qt, QCoreApplication
+from PySide2.QtGui import QFont
 
 import termqt
 from termqt import Terminal

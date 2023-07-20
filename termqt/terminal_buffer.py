@@ -4,16 +4,13 @@ from enum import Enum
 from functools import partial
 from collections import deque
 
-# from PyQt5.QtGui import QColor
-# from PyQt5.QtCore import Qt, QMutex
-# Pyside2
 from PySide2.QtGui import QColor
 from PySide2.QtCore import Qt, QMutex
 
 from .colors import colors8, colors16, colors256
 
 DEFAULT_FG_COLOR = Qt.white
-DEFAULT_BG_COLOR = Qt.black
+DEFAULT_BG_COLOR = QColor(40,40,40)
 
 
 class ControlChar(Enum):
@@ -858,9 +855,9 @@ class TerminalBuffer:
             _new_buffer.appendleft([None for x in range(row_len)])
             _new_wrap.appendleft(False)
 
-        while len(self._buffer) > self.maximum_line_history:
+        while len(_new_buffer) > self.maximum_line_history:
             _new_buffer.popleft()
-            self._line_wrapped_flags.popleft()
+            _new_wrap.popleft()
             cur_y -= 1
 
         self.row_len = row_len
@@ -876,7 +873,7 @@ class TerminalBuffer:
         self._buffer_lock.unlock()
 
         self.resize_callback(col_len, row_len)
-        self._log_buffer()
+        # self._log_buffer()
 
     def write(self, text, pos: Position = None, set_cursor=False,
               reset_offset=True):

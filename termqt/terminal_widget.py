@@ -4,12 +4,13 @@ from enum import Enum
 
 from PySide2.QtWidgets import QWidget, QScrollBar
 from PySide2.QtGui import QPainter, QColor, QPalette, QFontDatabase, QPen, \
-    QFont, QFontInfo, QFontMetrics, QPixmap
+    QFont, QFontInfo, QFontMetrics, QPixmap, QKeyEvent
 from PySide2.QtCore import Qt, QTimer, QMutex, Signal
 
 from .terminal_buffer import TerminalBuffer, DEFAULT_BG_COLOR, \
     DEFAULT_FG_COLOR, ControlChar, Placeholder
 
+from . import terminal_buffer
 
 class CursorState(Enum):
     ON = 1
@@ -57,7 +58,8 @@ class Terminal(TerminalBuffer, QWidget):
 
         self.scroll_bar: QScrollBar = None
 
-        self.logger = logger if logger else logging.getLogger()
+        self.logger = logger if logger else logging.getLogger("CLI")
+        self.logger.setLevel(logging.WARNING)
         self.logger.info("Initializing Terminal...")
 
         TerminalBuffer.__init__(self, 0, 0, logger=self.logger, **kwargs)
@@ -79,6 +81,7 @@ class Terminal(TerminalBuffer, QWidget):
         self.line_height = None
         self.row_len = None
         self.col_len = None
+        self.default_bg = DEFAULT_BG_COLOR
 
         self.dpr = int(self.devicePixelRatioF())
 
@@ -102,6 +105,8 @@ class Terminal(TerminalBuffer, QWidget):
         self._cursor_blinking_timer.timeout.connect(self._blink_cursor)
         self._switch_cursor_blink(state=CursorState.ON, blink=True)
 
+        
+        
         # scroll bar
 
         self.update_scroll_sig.connect(self._update_scroll_position)
@@ -117,7 +122,8 @@ class Terminal(TerminalBuffer, QWidget):
 
     def set_bg(self, color: QColor):
         TerminalBuffer.set_bg(self, color)
-
+        self.default_bg = color
+        terminal_buffer.DEFAULT_BG_COLOR = color
         pal = self.palette()
         pal.setColor(QPalette.Background, color)
         self.setPalette(pal)
@@ -134,7 +140,7 @@ class Terminal(TerminalBuffer, QWidget):
 
         if font:
             info = QFontInfo(font)
-            if info.styleHint() != QFont.Monospace:
+            if not info.fixedPitch():
                 self.logger.warning("font: Please use monospaced font! "
                                     f"Unsupported font {info.family()}.")
                 font = qfd.systemFont(QFontDatabase.FixedFont)
@@ -202,7 +208,7 @@ class Terminal(TerminalBuffer, QWidget):
 
         offset = self._buffer_display_offset
 
-        qp.fillRect(self.rect(), DEFAULT_BG_COLOR)
+        qp.fillRect(self.rect(), self.default_bg)
 
         for ln in range(self.col_len):
             real_ln = ln + offset
@@ -257,7 +263,7 @@ class Terminal(TerminalBuffer, QWidget):
 
         qp = QPainter(self._canvas)
         fg = DEFAULT_FG_COLOR
-        bg = DEFAULT_BG_COLOR
+        bg = self.default_bg
 
         if self._cursor_blinking_state == CursorState.UNFOCUSED:
             outline = QPen(fg)
@@ -423,7 +429,18 @@ class Terminal(TerminalBuffer, QWidget):
 
     def focusOutEvent(self, event):
         self._switch_cursor_blink(CursorState.UNFOCUSED, False)
-
+        
+    def event(self, event):
+        #Override the tab, so we dont lose focus
+        if (isinstance(event, QKeyEvent)):
+            if event.key() == Qt.Key_Tab:
+                self.input(b'\t')
+                return True
+            else:    
+                return super().event(event)
+        
+        return super().event(event)
+    
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()

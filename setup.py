@@ -7,10 +7,10 @@ setup(
 
     author="Terry Geng",
     author_email="terry@terriex.com",
-    description="A terminal emulator widget built on PyQt5.",
+    description="A terminal emulator widget built on PySide2.",
     keywords="terminal emulator pyqt",
     url="https://github.com/TerryGeng/termqt",
-    install_requires=("PyQt5", "PyQt5-sip"),
+    install_requires=("PySide2"),
     classifiers=[
         "Environment :: X11 Applications :: Qt",
         "Operating System :: POSIX",
