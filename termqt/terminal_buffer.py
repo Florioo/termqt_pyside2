@@ -10,7 +10,7 @@ from PySide2.QtCore import Qt, QMutex
 from .colors import colors8, colors16, colors256
 
 DEFAULT_FG_COLOR = Qt.white
-DEFAULT_BG_COLOR = Qt.black
+DEFAULT_BG_COLOR = QColor(40,40,40)
 
 
 class ControlChar(Enum):
