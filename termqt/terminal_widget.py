@@ -2,10 +2,10 @@ import logging
 import math
 from enum import Enum
 
-from PySide2.QtWidgets import QWidget, QScrollBar
-from PySide2.QtGui import QPainter, QColor, QPalette, QFontDatabase, QPen, \
+from PySide6.QtWidgets import QWidget, QScrollBar
+from PySide6.QtGui import QPainter, QColor, QPalette, QFontDatabase, QPen, \
     QFont, QFontInfo, QFontMetrics, QPixmap, QKeyEvent
-from PySide2.QtCore import Qt, QTimer, QMutex, Signal
+from PySide6.QtCore import Qt, QTimer, QRecursiveMutex, Signal, QMutex
 
 from .terminal_buffer import TerminalBuffer, DEFAULT_BG_COLOR, \
     DEFAULT_FG_COLOR, ControlChar, Placeholder
@@ -67,7 +67,7 @@ class Terminal(TerminalBuffer, QWidget):
         # we paint everything to the pixmap first then paint this pixmap
         # on paint event. This allows us to partially update the canvas.
         self._canvas = QPixmap(width, height)
-        self._painter_lock = QMutex(QMutex.Recursive)
+        self._painter_lock = QRecursiveMutex()
 
         self._width = width
         self._height = height
@@ -83,7 +83,6 @@ class Terminal(TerminalBuffer, QWidget):
         self.col_len = None
         self.default_bg = DEFAULT_BG_COLOR
 
-        self.dpr = int(self.devicePixelRatioF())
 
         self.set_bg(DEFAULT_BG_COLOR)
         self.set_fg(DEFAULT_FG_COLOR)
@@ -119,20 +118,24 @@ class Terminal(TerminalBuffer, QWidget):
 
         self._stdout_sig.connect(self._stdout)
         self.resize(width, height)
-
+        
+    @property
+    def dpr(self):
+        return self.devicePixelRatioF()
+        
     def set_bg(self, color: QColor):
         TerminalBuffer.set_bg(self, color)
         self.default_bg = color
         terminal_buffer.DEFAULT_BG_COLOR = color
         pal = self.palette()
-        pal.setColor(QPalette.Background, color)
+        pal.setColor(QPalette.Window, color)
         self.setPalette(pal)
 
     def set_fg(self, color: QColor):
         TerminalBuffer.set_fg(self, color)
 
         pal = self.palette()
-        pal.setColor(QPalette.Foreground, color)
+        pal.setColor(QPalette.WindowText, color)
         self.setPalette(pal)
 
     def set_font(self, font: QFont = None):

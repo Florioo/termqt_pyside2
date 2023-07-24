@@ -4,8 +4,8 @@ from enum import Enum
 from functools import partial
 from collections import deque
 
-from PySide2.QtGui import QColor
-from PySide2.QtCore import Qt, QMutex
+from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt, QRecursiveMutex
 
 from .colors import colors8, colors16, colors256
 
@@ -598,7 +598,7 @@ class TerminalBuffer:
         # initialize a buffer to store all characters to display
         # define in _resize()_ as a deque
         self._buffer = None
-        self._buffer_lock = QMutex(QMutex.Recursive)
+        self._buffer_lock = QRecursiveMutex()
 
         self.auto_wrap_enabled = auto_wrap_enabled
         # used to store the line number of lines that are wrapped automatically
