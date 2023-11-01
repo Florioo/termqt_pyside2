@@ -457,7 +457,8 @@ class EscapeProcessor:
     def _csi_H(self):
         # CUP – Cursor On-Screen Position
         self.set_cursor_abs_position_cb(
-            self._get_args(1, default=1) - 1, self._get_args(0, default=1) - 1  # begin from 1 -> begin from 0
+            self._get_args(1, default=1) - 1,
+            self._get_args(0, default=1) - 1,  # begin from 1 -> begin from 0
         )
 
     def _csi_A(self):
