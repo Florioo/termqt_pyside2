@@ -41,7 +41,7 @@ class TerminalWinptyIO(TerminalIO):
 
             self._read_thread = threading.Thread(name="TerminalIO Read Loop", target=self._read_loop, daemon=True)
             self._read_thread.start()
-        except:
+        except Exception:
             self.running = False
             self.terminated_callback()
 

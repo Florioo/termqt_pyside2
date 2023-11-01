@@ -3,9 +3,7 @@ import logging
 import platform
 from PySide2.QtWidgets import QApplication, QWidget, QHBoxLayout, QScrollBar
 from PySide2.QtCore import Qt, QCoreApplication
-from PySide2.QtGui import QFont
 
-import termqt
 from termqt import Terminal
 
 if __name__ == "__main__":
