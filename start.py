@@ -12,10 +12,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        "[%(asctime)s] > "
-        "[%(filename)s:%(lineno)d] %(message)s"
-    )
+    formatter = logging.Formatter("[%(asctime)s] > " "[%(filename)s:%(lineno)d] %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
@@ -45,22 +42,14 @@ if __name__ == "__main__":
         bin = "/bin/bash"
 
         from termqt import TerminalPOSIXExecIO
-        terminal_io = TerminalPOSIXExecIO(
-                terminal.row_len,
-                terminal.col_len,
-                bin,
-                logger=logger
-                )
+
+        terminal_io = TerminalPOSIXExecIO(terminal.row_len, terminal.col_len, bin, logger=logger)
     elif platform == "Windows":
         bin = "cmd"
 
         from termqt import TerminalWinptyIO
-        terminal_io = TerminalWinptyIO(
-                terminal.row_len,
-                terminal.col_len,
-                bin,
-                logger=logger
-                )
+
+        terminal_io = TerminalWinptyIO(terminal.row_len, terminal.col_len, bin, logger=logger)
 
         # it turned out that cmd prefers to handle resize by itself
         # see https://github.com/TerryGeng/termqt/issues/7

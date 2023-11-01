@@ -4,7 +4,6 @@ setup(
     name="termqt",
     version="0.11",
     packages=find_packages(),
-
     author="Terry Geng",
     author_email="terry@terriex.com",
     description="A terminal emulator widget built on PySide2.",
@@ -14,7 +13,6 @@ setup(
     classifiers=[
         "Environment :: X11 Applications :: Qt",
         "Operating System :: POSIX",
-        "License :: OSI Approved :: GNU Lesser General Public License v2 "
-        "or later (LGPLv2+)",
-    ]
+        "License :: OSI Approved :: GNU Lesser General Public License v2 " "or later (LGPLv2+)",
+    ],
 )

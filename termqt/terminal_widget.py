@@ -3,14 +3,24 @@ import math
 from enum import Enum
 
 from PySide2.QtWidgets import QWidget, QScrollBar
-from PySide2.QtGui import QPainter, QColor, QPalette, QFontDatabase, QPen, \
-    QFont, QFontInfo, QFontMetrics, QPixmap, QKeyEvent
+from PySide2.QtGui import (
+    QPainter,
+    QColor,
+    QPalette,
+    QFontDatabase,
+    QPen,
+    QFont,
+    QFontInfo,
+    QFontMetrics,
+    QPixmap,
+    QKeyEvent,
+)
 from PySide2.QtCore import Qt, QTimer, QMutex, Signal
 
-from .terminal_buffer import TerminalBuffer, DEFAULT_BG_COLOR, \
-    DEFAULT_FG_COLOR, ControlChar, Placeholder
+from .terminal_buffer import TerminalBuffer, DEFAULT_BG_COLOR, DEFAULT_FG_COLOR, ControlChar, Placeholder
 
 from . import terminal_buffer
+
 
 class CursorState(Enum):
     ON = 1
@@ -19,7 +29,6 @@ class CursorState(Enum):
 
 
 class Terminal(TerminalBuffer, QWidget):
-
     # Terminal widget.
     # Note: One should not call functions that begin with _, especially those
     #       linking with painting things.
@@ -42,18 +51,9 @@ class Terminal(TerminalBuffer, QWidget):
     # update scroll bar
     update_scroll_sig = Signal()
 
-    def __init__(self,
-                 width,
-                 height,
-                 *,
-                 logger=None,
-                 padding=4,
-                 font_size=12,
-                 line_height_factor=1.2,
-                 font=None,
-                 **kwargs
-                 ):
-
+    def __init__(
+        self, width, height, *, logger=None, padding=4, font_size=12, line_height_factor=1.2, font=None, **kwargs
+    ):
         QWidget.__init__(self)
 
         self.scroll_bar: QScrollBar = None
@@ -105,8 +105,6 @@ class Terminal(TerminalBuffer, QWidget):
         self._cursor_blinking_timer.timeout.connect(self._blink_cursor)
         self._switch_cursor_blink(state=CursorState.ON, blink=True)
 
-        
-        
         # scroll bar
 
         self.update_scroll_sig.connect(self._update_scroll_position)
@@ -141,8 +139,7 @@ class Terminal(TerminalBuffer, QWidget):
         if font:
             info = QFontInfo(font)
             if not info.fixedPitch():
-                self.logger.warning("font: Please use monospaced font! "
-                                    f"Unsupported font {info.family()}.")
+                self.logger.warning("font: Please use monospaced font! " f"Unsupported font {info.family()}.")
                 font = qfd.systemFont(QFontDatabase.FixedFont)
         elif "Menlo" in qfd.families():
             font = QFont("Menlo")
@@ -161,8 +158,9 @@ class Terminal(TerminalBuffer, QWidget):
         self.char_height = self.metrics.height()
         self.line_height = int(self.char_height * self._line_height_factor)
 
-        self.logger.info(f"font: Font {info.family()} selected, character "
-                         f"size {self.char_width}x{self.char_height}.")
+        self.logger.info(
+            f"font: Font {info.family()} selected, character " f"size {self.char_width}x{self.char_height}."
+        )
 
         self.row_len = int(self._width / self.char_width)
         self.col_len = int(self._height / self.line_height)
@@ -178,20 +176,16 @@ class Terminal(TerminalBuffer, QWidget):
         self._painter_lock.lock()
         _qp = QPainter(self)
         _qp.setRenderHint(QPainter.Antialiasing)
-        _qp.drawPixmap(
-            int(self._padding/2),
-            int(self._padding/2),
-            self._canvas
-        )
+        _qp.drawPixmap(int(self._padding / 2), int(self._padding / 2), self._canvas)
         QWidget.paintEvent(self, event)
         self._painter_lock.unlock()
 
     def _paint_buffer(self):
         self._painter_lock.lock()
 
-        self._canvas = QPixmap(self.row_len * self.char_width * self.dpr,
-                               int((self.col_len + 0.2)
-                                   * self.line_height * self.dpr))
+        self._canvas = QPixmap(
+            self.row_len * self.char_width * self.dpr, int((self.col_len + 0.2) * self.line_height * self.dpr)
+        )
         self._canvas.setDevicePixelRatio(self.dpr)
         qp = QPainter(self._canvas)
         qp.fillRect(self.rect(), self._bg_color)
@@ -225,21 +219,19 @@ class Terminal(TerminalBuffer, QWidget):
                         ft.setUnderline(c.underline)
                         qp.setFont(ft)
                         if not c.reverse:
-                            qp.fillRect(cn*cw, int(ht - 0.8*ch), cw*c.char_width, lh,
-                                        c.bg_color)
+                            qp.fillRect(cn * cw, int(ht - 0.8 * ch), cw * c.char_width, lh, c.bg_color)
                             qp.setPen(c.color)
-                            qp.drawText(cn*cw, ht, c.char)
+                            qp.drawText(cn * cw, ht, c.char)
                         else:
-                            qp.fillRect(cn*cw, int(ht - 0.8*ch), cw*c.char_width, lh,
-                                        c.color)
+                            qp.fillRect(cn * cw, int(ht - 0.8 * ch), cw * c.char_width, lh, c.color)
                             qp.setPen(c.bg_color)
-                            qp.drawText(cn*cw, ht, c.char)
+                            qp.drawText(cn * cw, ht, c.char)
                 else:
                     qp.setPen(fg_color)
                     ft.setBold(False)
                     ft.setUnderline(False)
                     qp.setFont(ft)
-                    qp.drawText(ht, cn*cw, " ")
+                    qp.drawText(ht, cn * cw, " ")
         qp.end()
 
         self._painter_lock.unlock()
@@ -252,11 +244,12 @@ class Terminal(TerminalBuffer, QWidget):
         ind_x = self._cursor_position.x
         ind_y = self._cursor_position.y
         # if cursor is at the right edge of screen, display half of it
-        x = int((ind_x if ind_x < self.row_len else (self.row_len - 0.5)) \
-                * self.char_width)
-        y = int((ind_y - self._buffer_display_offset) \
-                * self.line_height + (self.line_height - self.char_height) \
-                + 0.2 * self.line_height)
+        x = int((ind_x if ind_x < self.row_len else (self.row_len - 0.5)) * self.char_width)
+        y = int(
+            (ind_y - self._buffer_display_offset) * self.line_height
+            + (self.line_height - self.char_height)
+            + 0.2 * self.line_height
+        )
 
         cw = self.char_width
         ch = self.char_height
@@ -280,8 +273,7 @@ class Terminal(TerminalBuffer, QWidget):
         qp.setPen(fg)
         qp.setFont(self.font)
 
-        cy = (self._cursor_position.y - self._buffer_display_offset + 1) \
-            * self.line_height
+        cy = (self._cursor_position.y - self._buffer_display_offset + 1) * self.line_height
         if ind_x == self.row_len:  # cursor sitting at the edge of screen
             pass
         else:
@@ -290,8 +282,7 @@ class Terminal(TerminalBuffer, QWidget):
 
             if not c:
                 qp.drawText(x, cy, " ")
-            elif self._cursor_blinking_state == CursorState.OFF or \
-                    c.char_width == 1:
+            elif self._cursor_blinking_state == CursorState.OFF or c.char_width == 1:
                 while c and c.placeholder != Placeholder.NON:
                     chr_x -= 1
                     x -= self.char_width
@@ -326,10 +317,7 @@ class Terminal(TerminalBuffer, QWidget):
         QWidget.resize(self, width, height)
 
         row_len = int((width - self._padding) / self.char_width)
-        col_len = min(
-            int((height - self._padding) / self.line_height),
-            self.maximum_line_history
-        )
+        col_len = min(int((height - self._padding) / self.line_height), self.maximum_line_history)
 
         TerminalBuffer.resize(self, row_len, col_len)
 
@@ -429,18 +417,18 @@ class Terminal(TerminalBuffer, QWidget):
 
     def focusOutEvent(self, event):
         self._switch_cursor_blink(CursorState.UNFOCUSED, False)
-        
+
     def event(self, event):
-        #Override the tab, so we dont lose focus
-        if (isinstance(event, QKeyEvent)):
+        # Override the tab, so we dont lose focus
+        if isinstance(event, QKeyEvent):
             if event.key() == Qt.Key_Tab:
-                self.input(b'\t')
+                self.input(b"\t")
                 return True
-            else:    
+            else:
                 return super().event(event)
-        
+
         return super().event(event)
-    
+
     def keyPressEvent(self, event):
         key = event.key()
         modifiers = event.modifiers()
@@ -450,13 +438,13 @@ class Terminal(TerminalBuffer, QWidget):
             # This is a one-shot loop, because I want to use 'break'
             # to jump out of this block
             if key == Qt.Key_Up:
-                self.input(b'\x1b[A')
+                self.input(b"\x1b[A")
             elif key == Qt.Key_Down:
-                self.input(b'\x1b[B')
+                self.input(b"\x1b[B")
             elif key == Qt.Key_Right:
-                self.input(b'\x1b[C')
+                self.input(b"\x1b[C")
             elif key == Qt.Key_Left:
-                self.input(b'\x1b[D')
+                self.input(b"\x1b[D")
             else:
                 break  # avoid the execution of 'return'
             return
@@ -532,12 +520,14 @@ class Terminal(TerminalBuffer, QWidget):
             return
 
         if text:
-            self.input(text.encode('utf-8'))
+            self.input(text.encode("utf-8"))
 
     def showEvent(self, event):
         super().showEvent(event)
+
         def resize(*args):
             self.resize(self.size().width(), self.size().height())
+
         QTimer.singleShot(0, resize)
 
     # ==========================

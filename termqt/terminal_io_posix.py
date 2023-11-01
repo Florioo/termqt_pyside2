@@ -53,13 +53,13 @@ class TerminalPOSIXIO(TerminalIO, ABC):
 
             attrs = termios.tcgetattr(stdout)
             iflag, oflag, cflag, lflag, ispeed, ospeed, cc = attrs
-            oflag |= (termios.OPOST | termios.ONLCR | termios.INLCR)
+            oflag |= termios.OPOST | termios.ONLCR | termios.INLCR
             attrs = [iflag, oflag, cflag, lflag, ispeed, ospeed, cc]
             termios.tcsetattr(stdout, termios.TCSANOW, attrs)
 
             attrs = termios.tcgetattr(stdin)
             iflag, oflag, cflag, lflag, ispeed, ospeed, cc = attrs
-            oflag |= (termios.OPOST | termios.ONLCR | termios.INLCR)
+            oflag |= termios.OPOST | termios.ONLCR | termios.INLCR
             attrs = [iflag, oflag, cflag, lflag, ispeed, ospeed, cc]
             termios.tcsetattr(stdin, termios.TCSANOW, attrs)
 
@@ -82,8 +82,7 @@ class TerminalPOSIXIO(TerminalIO, ABC):
             fcntl.ioctl(self.fd, termios.TIOCSWINSZ, s)
             os.kill(self.pid, signal.SIGWINCH)
 
-            threading.Thread(name="TerminalIO Read Loop",
-                             target=self._read_loop, daemon=True).start()
+            threading.Thread(name="TerminalIO Read Loop", target=self._read_loop, daemon=True).start()
 
     @abstractmethod
     def run_slave(self):
@@ -97,6 +96,7 @@ class TerminalPOSIXIO(TerminalIO, ABC):
         try:
             import fcntl
             import termios
+
             self.cols = cols
             self.rows = rows
 
@@ -182,14 +182,15 @@ class TerminalPOSIXExecIO(TerminalPOSIXIO):
 
     def run_slave(self):
         import shlex
+
         cmd = shlex.split(self.cmd)
 
         env = self.env
         env["COLUMNS"] = str(self.cols)
         env["LINES"] = str(self.rows)
         env["TERM"] = env.get("TERM", "xterm-256color")
-        env["LANG"] = 'en_US.UTF-8'
-        env["LC_CTYPE"] = 'en_US.UTF-8'
+        env["LANG"] = "en_US.UTF-8"
+        env["LC_CTYPE"] = "en_US.UTF-8"
         env["PYTHONIOENCODING"] = "utf_8"
 
         os.execvpe(cmd[0], cmd, self.env)

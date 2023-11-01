@@ -39,11 +39,7 @@ class TerminalWinptyIO(TerminalIO):
             )
             self.pty_process.setwinsize(self.cols, self.rows)
 
-            self._read_thread = threading.Thread(
-                name="TerminalIO Read Loop",
-                target=self._read_loop,
-                daemon=True
-            )
+            self._read_thread = threading.Thread(name="TerminalIO Read Loop", target=self._read_loop, daemon=True)
             self._read_thread.start()
         except:
             self.running = False
@@ -78,7 +74,7 @@ class TerminalWinptyIO(TerminalIO):
                 elif len(buf) == 0:
                     continue
                 if isinstance(buf, str):
-                    self.stdout_callback(bytes(buf, 'utf-8'))
+                    self.stdout_callback(bytes(buf, "utf-8"))
                 else:
                     self.stdout_callback(buf)
         finally:

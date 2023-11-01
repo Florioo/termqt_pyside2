@@ -10,26 +10,26 @@ from PySide2.QtCore import Qt, QMutex
 from .colors import colors8, colors16, colors256
 
 DEFAULT_FG_COLOR = Qt.white
-DEFAULT_BG_COLOR = QColor(40,40,40)
+DEFAULT_BG_COLOR = QColor(40, 40, 40)
 
 
 class ControlChar(Enum):
-    NUL = 0   # Ctrl-@, null    
-    SOH = 1   # Ctrl-A, start of heading
-    STX = 2   # Ctrl-B, start of text, bash shortcut for left arrow key
-    ETX = 3   # Ctrl-C, end of text
-    EOT = 4   # Ctrl-D, end of transmit, bash shortcut for delete
-    ENQ = 5   # Ctrl-E, enquiry, bash shortcut for end of line
-    ACK = 6   # Ctrl-F, acknowledge, bash shortcut for right arrow key
-    BEL = 7   # Ctrl-G, bell, bash shortcut for leave history search
-    BS = 8    # Ctrl-H, backspace
-    TAB = 9   # Ctrl-I, tab
-    LF = 10   # Ctrl-J, NL line feed, new line
-    VT = 11   # Ctrl-K, vertical tab, bash shortcut for cut after cursor
-    FF = 12   # Ctrl-L, from feed, bash shortcut for clear
-    CR = 13   # Ctrl-M, carriage return
-    SO = 14   # Ctrl-N, shift out, bash shortcut for go down in history
-    SI = 15   # Ctrl-O, shift in, bash shortcut for run command
+    NUL = 0  # Ctrl-@, null
+    SOH = 1  # Ctrl-A, start of heading
+    STX = 2  # Ctrl-B, start of text, bash shortcut for left arrow key
+    ETX = 3  # Ctrl-C, end of text
+    EOT = 4  # Ctrl-D, end of transmit, bash shortcut for delete
+    ENQ = 5  # Ctrl-E, enquiry, bash shortcut for end of line
+    ACK = 6  # Ctrl-F, acknowledge, bash shortcut for right arrow key
+    BEL = 7  # Ctrl-G, bell, bash shortcut for leave history search
+    BS = 8  # Ctrl-H, backspace
+    TAB = 9  # Ctrl-I, tab
+    LF = 10  # Ctrl-J, NL line feed, new line
+    VT = 11  # Ctrl-K, vertical tab, bash shortcut for cut after cursor
+    FF = 12  # Ctrl-L, from feed, bash shortcut for clear
+    CR = 13  # Ctrl-M, carriage return
+    SO = 14  # Ctrl-N, shift out, bash shortcut for go down in history
+    SI = 15  # Ctrl-O, shift in, bash shortcut for run command
     DLE = 16  # Ctrl-P, data line escape, bash shortcut for go up in history
     DC1 = 17  # Ctrl-Q, device control 1, bash shortcut for resume output
     DC2 = 18  # Ctrl-R, device control 2, bash shortcut for search history
@@ -39,10 +39,9 @@ class ControlChar(Enum):
     SYN = 22  # Ctrl-V
     ETB = 23  # Ctrl-W, end of xmit block, bash shortcut for cut the word before cursor
     CAN = 24  # Ctrl-X, cancel
-    EM = 25,  # Ctrl-Y, end of medium, bash shortcut for paste
+    EM = (25,)  # Ctrl-Y, end of medium, bash shortcut for paste
     SUB = 26  # Ctrl-Z, substitute
     ESC = 27  # Ctrl-[, escape
-
 
 
 class Placeholder(Enum):
@@ -139,25 +138,25 @@ class EscapeProcessor:
         self._buffer = ""
 
         self._esc_func = {
-            'M': self._esc_m,
+            "M": self._esc_m,
         }
 
         self._csi_func = {
-            'n': self._csi_n,
-            'n?': self._csi_n,
-            'm': self._csi_m,
-            'P': self._csi_P,
-            'A': self._csi_A,
-            'B': self._csi_B,
-            'C': self._csi_C,
-            'D': self._csi_D,
-            'G': self._csi_G,
-            'H': self._csi_H,
-            'J': self._csi_J,
-            'K': self._csi_K,
-            'M': self._csi_M,
-            'h?': partial(self._csi_h_l_ext, True),
-            'l?': partial(self._csi_h_l_ext, False)
+            "n": self._csi_n,
+            "n?": self._csi_n,
+            "m": self._csi_m,
+            "P": self._csi_P,
+            "A": self._csi_A,
+            "B": self._csi_B,
+            "C": self._csi_C,
+            "D": self._csi_D,
+            "G": self._csi_G,
+            "H": self._csi_H,
+            "J": self._csi_J,
+            "K": self._csi_K,
+            "M": self._csi_M,
+            "h?": partial(self._csi_h_l_ext, True),
+            "l?": partial(self._csi_h_l_ext, False),
         }
 
         # ==== Callbacks ====
@@ -273,8 +272,7 @@ class EscapeProcessor:
                 self._enter_state(self.State.CSI_WAIT_FOR_MARKS)
             elif c == 93:  # ord(']')
                 self._enter_state(self.State.OSC_WAIT_FOR_NEXT_ARG)
-            elif 48 <= c <= 57 or \
-                    65 <= c <= 90 or 97 <= c <= 122:  # 0-9, A-Z, a-z
+            elif 48 <= c <= 57 or 65 <= c <= 90 or 97 <= c <= 122:  # 0-9, A-Z, a-z
                 self._cmd = chr(c)
                 self._enter_state(self.State.ESC_COMPLETE)
                 return 1
@@ -282,7 +280,7 @@ class EscapeProcessor:
                 self.fail()
 
         elif self._state == self.State.CSI_WAIT_FOR_MARKS:
-            if c in [ord('?'), ord('#'), ord('<'), ord('>'), ord('=')]:
+            if c in [ord("?"), ord("#"), ord("<"), ord(">"), ord("=")]:
                 self._mark = chr(c)
                 self._enter_state(self.State.CSI_WAIT_FOR_NEXT_ARG)
             elif 48 <= c <= 57:  # digits, 0-9
@@ -424,10 +422,9 @@ class EscapeProcessor:
         self._state = self.State.WAIT_FOR_ESC
 
     def fail(self):
-        buf = self._buffer.encode('utf-8')
+        buf = self._buffer.encode("utf-8")
         self.reset()
-        raise ValueError("Unable to process escape sequence "
-                         f"{buf}.")
+        raise ValueError("Unable to process escape sequence " f"{buf}.")
 
     def _esc_m(self):
         # RI - Reverse Index
@@ -460,8 +457,7 @@ class EscapeProcessor:
     def _csi_H(self):
         # CUP – Cursor On-Screen Position
         self.set_cursor_abs_position_cb(
-            self._get_args(1, default=1) - 1,
-            self._get_args(0, default=1) - 1  # begin from 1 -> begin from 0
+            self._get_args(1, default=1) - 1, self._get_args(0, default=1) - 1  # begin from 1 -> begin from 0
         )
 
     def _csi_A(self):
@@ -514,15 +510,14 @@ class EscapeProcessor:
                     reverse = 0
                 continue
 
-            elif 30 <= arg <= 37 or 40 <= arg <= 47 or \
-                    90 <= arg <= 97 or 100 <= arg <= 107:
+            elif 30 <= arg <= 37 or 40 <= arg <= 47 or 90 <= arg <= 97 or 100 <= arg <= 107:
                 if arg >= 90:
                     arg -= 60
                     arg1 = 1
                     i += 1
                 else:
                     if i + 1 < len(self._args):
-                        arg1 = self._get_args(i+1, default=0)
+                        arg1 = self._get_args(i + 1, default=0)
                     else:
                         arg1 = 0
 
@@ -555,8 +550,8 @@ class EscapeProcessor:
 
             else:
                 if i + 2 < len(self._args):  # need two consecuted args
-                    arg1 = self._get_args(i+1, default=0)
-                    arg2 = self._get_args(i+2, default=0)
+                    arg1 = self._get_args(i + 1, default=0)
+                    arg2 = self._get_args(i + 2, default=0)
                     i += 3
                     if arg == 38 and arg1 == 5 and 0 <= arg2 <= 255:
                         # xterm 256 colors
@@ -586,13 +581,7 @@ class EscapeProcessor:
 
 
 class TerminalBuffer:
-    def __init__(self,
-                 row_len,
-                 col_len,
-                 *,
-                 logger=None,
-                 auto_wrap_enabled=True
-                 ):
+    def __init__(self, row_len, col_len, *, logger=None, auto_wrap_enabled=True):
         self.logger = logger
 
         # initialize a buffer to store all characters to display
@@ -666,8 +655,7 @@ class TerminalBuffer:
         ep.set_cursor_abs_position_cb = self.set_cursor_on_screen_position
         ep.set_cursor_rel_position_cb = self.set_cursor_rel_pos
         ep.set_cursor_x_position_cb = self.set_cursor_x_pos
-        ep.report_device_status_cb = lambda: self.stdin_callback(
-            "\x1b[0n".encode("utf-8"))
+        ep.report_device_status_cb = lambda: self.stdin_callback("\x1b[0n".encode("utf-8"))
         ep.report_cursor_position_cb = self.report_cursor_pos
         ep.set_style_cb = self.set_style
         ep.use_alt_buffer = self.toggle_alt_screen
@@ -684,8 +672,7 @@ class TerminalBuffer:
         self._fg_color = color if color else self._fg_color
         self._bg_color = bg_color if bg_color else self._bg_color
         self._bold = bool(bold) if bold != -1 else self._bold
-        self._underline = bool(underline) if underline != -1 else \
-            self._underline
+        self._underline = bool(underline) if underline != -1 else self._underline
         self._reversed = bool(reverse) if reverse != -1 else self._reversed
 
     # ==========================
@@ -693,20 +680,17 @@ class TerminalBuffer:
     # ==========================
 
     def clear_buffer(self):
-        _new_buffer = deque([[None for x in range(self.row_len)]
-                             for i in range(self.col_len)])
+        _new_buffer = deque([[None for x in range(self.row_len)] for i in range(self.col_len)])
         _new_wrap = deque([False for i in range(self.col_len)])
 
         self._buffer = _new_buffer
         self._line_wrapped_flags = _new_wrap
 
     def create_buffer(self, row_len, col_len):
-        _new_buffer = deque([[None for x in range(row_len)]
-                             for i in range(col_len)])
+        _new_buffer = deque([[None for x in range(row_len)] for i in range(col_len)])
         _new_wrap = deque([False for i in range(col_len)])
 
-        self.logger.info(f"screen: buffer created, size ({row_len}x"
-                         f"{col_len})")
+        self.logger.info(f"screen: buffer created, size ({row_len}x" f"{col_len})")
 
         self.row_len = row_len
         self.col_len = col_len
@@ -747,8 +731,7 @@ class TerminalBuffer:
             if self._line_wrapped_flags[i]:
                 old_auto_breaks_before_cursor += 1
 
-        self.logger.info(f"screen: resize triggered, new size ({row_len}x"
-                         f"{col_len})")
+        self.logger.info(f"screen: resize triggered, new size ({row_len}x" f"{col_len})")
 
         _new_buffer = deque([[None for x in range(row_len)]])
         _new_wrap = deque([False])
@@ -775,7 +758,7 @@ class TerminalBuffer:
                 # if last line was unfinished and was automantically
                 # wrapped into the next line in the old screen, this flag
                 # will be True, which means we don't need to wrap it again
-                if not self._line_wrapped_flags[y-1]:
+                if not self._line_wrapped_flags[y - 1]:
                     if not breaked:
                         # The _breaked_ flag is used to avoid
                         # breaking the same line twice
@@ -818,8 +801,7 @@ class TerminalBuffer:
                         new_x = row_len - 1
                         continue
 
-                    empty_ahead = all(map(lambda c: not c or c.placeholder != Placeholder.NON,
-                                          old_row[x+1:]))
+                    empty_ahead = all(map(lambda c: not c or c.placeholder != Placeholder.NON, old_row[x + 1 :]))
 
                     if y == old_buf_col_len - 1 and empty_ahead:
                         # avoid creating extra new lines after last line
@@ -831,8 +813,7 @@ class TerminalBuffer:
                     new_x = 0
                     breaked = True
 
-                    if empty_ahead and \
-                            not self._line_wrapped_flags[y]:
+                    if empty_ahead and not self._line_wrapped_flags[y]:
                         # avoid wrapping a bunch of spaces into next line
                         break
                     else:
@@ -875,8 +856,7 @@ class TerminalBuffer:
         self.resize_callback(col_len, row_len)
         # self._log_buffer()
 
-    def write(self, text, pos: Position = None, set_cursor=False,
-              reset_offset=True):
+    def write(self, text, pos: Position = None, set_cursor=False, reset_offset=True):
         # _pos_ is position on the screen, not position on the buffer
 
         self._buffer_lock.lock()
@@ -898,15 +878,16 @@ class TerminalBuffer:
         bold, underline, reverse = self._bold, self._underline, self._reversed
         do_auto_wrap = self.auto_wrap_enabled
 
-        char_list = [Char(t, self.get_char_width(t), Placeholder.NON, color, bgcolor,
-                          bold, underline, reverse) for t in text]
+        char_list = [
+            Char(t, self.get_char_width(t), Placeholder.NON, color, bgcolor, bold, underline, reverse) for t in text
+        ]
 
         i = -1
         while i + 1 < len(char_list):
             i += 1
             t = char_list[i]
 
-            if t.char == '\n':
+            if t.char == "\n":
                 pos_x = 0
                 pos_y += 1
                 if pos_y == len(buf):
@@ -941,11 +922,10 @@ class TerminalBuffer:
 
         if set_cursor:
             # assert pos_x <= row_len
-            self._cursor_position = Position(min(pos_x, row_len-1), pos_y)
+            self._cursor_position = Position(min(pos_x, row_len - 1), pos_y)
 
         if reset_offset:
-            self._buffer_display_offset = min(len(self._buffer) - self.col_len,
-                                              self._cursor_position.y)
+            self._buffer_display_offset = min(len(self._buffer) - self.col_len, self._cursor_position.y)
             self.update_scroll_position_postponed()
 
         self._buffer_lock.unlock()
@@ -958,8 +938,8 @@ class TerminalBuffer:
 
         if y_from_screen_top > self.col_len - 1:
             self._buffer_display_offset = min(
-                    self._buffer_display_offset + y_from_screen_top - self.col_len + 1,
-                    len(self._buffer) - self.col_len)
+                self._buffer_display_offset + y_from_screen_top - self.col_len + 1, len(self._buffer) - self.col_len
+            )
             self.update_scroll_position_postponed()
 
     def get_char_width(self, char):
@@ -967,9 +947,7 @@ class TerminalBuffer:
 
     def _log_buffer(self):
         self.logger.info(f"buffer: length: {len(self._buffer)}, display offset: {self._buffer_display_offset}")
-        self.logger.info("buffer(00): |" +
-                         "-" * self.row_len +
-                         "|")
+        self.logger.info("buffer(00): |" + "-" * self.row_len + "|")
 
         cp = self._cursor_position
         for ln in range(len(self._buffer)):
@@ -984,20 +962,14 @@ class TerminalBuffer:
                     s += " "
 
             if cp.y == ln and cp.x == self.row_len:
-                self.logger.info(f"buffer({ln:2d}): |{s}█" +
-                                 ("x" if self._line_wrapped_flags[ln] else ""))
+                self.logger.info(f"buffer({ln:2d}): |{s}█" + ("x" if self._line_wrapped_flags[ln] else ""))
             else:
-                self.logger.info(f"buffer({ln:2d}): |{s}|" +
-                                 ("x" if self._line_wrapped_flags[ln] else ""))
+                self.logger.info(f"buffer({ln:2d}): |{s}|" + ("x" if self._line_wrapped_flags[ln] else ""))
 
-        self.logger.info(f"buffer({ln:2d}): |" +
-                         "-" * self.row_len +
-                         "|")
+        self.logger.info(f"buffer({ln:2d}): |" + "-" * self.row_len + "|")
 
     def _log_screen(self):
-        self.logger.info(f"screen({self.row_len}x{self.col_len}): |" +
-                         "-" * self.row_len +
-                         "|")
+        self.logger.info(f"screen({self.row_len}x{self.col_len}): |" + "-" * self.row_len + "|")
 
         offset = len(self._buffer) - self.col_len
 
@@ -1014,18 +986,16 @@ class TerminalBuffer:
                     s += " "
 
             if cp.y == ln and cp.x == self.row_len:
-                self.logger.info(f"screen({self.row_len}x{self.col_len}): "
-                                 f"|{s}█" +
-                                 ("x" if self._line_wrapped_flags[ln + offset]
-                                  else ""))
+                self.logger.info(
+                    f"screen({self.row_len}x{self.col_len}): "
+                    f"|{s}█" + ("x" if self._line_wrapped_flags[ln + offset] else "")
+                )
             else:
-                self.logger.info(f"screen({self.row_len}x{self.col_len}): "
-                                 f"|{s}|" +
-                                 ("x" if self._line_wrapped_flags[ln + offset]
-                                  else ""))
-        self.logger.info(f"screen({self.row_len}x{self.col_len}): |" +
-                         "-"*self.row_len +
-                         "|")
+                self.logger.info(
+                    f"screen({self.row_len}x{self.col_len}): "
+                    f"|{s}|" + ("x" if self._line_wrapped_flags[ln + offset] else "")
+                )
+        self.logger.info(f"screen({self.row_len}x{self.col_len}): |" + "-" * self.row_len + "|")
 
     def delete_at_cursor(self):
         pos = self._cursor_position
@@ -1147,9 +1117,7 @@ class TerminalBuffer:
     # ==========================
 
     def set_cursor_position(self, x, y):
-        self._cursor_position = Position(
-            *self._move_screen_with_pos(x, y)
-        )
+        self._cursor_position = Position(*self._move_screen_with_pos(x, y))
 
     def set_cursor_on_screen_position(self, x, y):
         pos_y = self._buffer_display_offset + y
@@ -1196,17 +1164,13 @@ class TerminalBuffer:
 
     def backspace(self, count=1):
         x = self._cursor_position.x - count
-        self.set_cursor_position(
-            *self._move_screen_with_pos(x, self._cursor_position.y)
-        )
+        self.set_cursor_position(*self._move_screen_with_pos(x, self._cursor_position.y))
 
     def linefeed(self):
         y = self._cursor_position.y + 1
         x = 0
 
-        self.set_cursor_position(
-            *self._move_screen_with_pos(x, y)
-        )
+        self.set_cursor_position(*self._move_screen_with_pos(x, y))
 
     def carriage_feed(self):
         y = self._cursor_position.y
@@ -1295,17 +1259,17 @@ class TerminalBuffer:
                         pass
 
                     # determing utf-8 char width
-                    elif char & 0xc0 == 0xc0:  # 2-byte, 3-byte, or 4-byte
-                        if char & 0xe0 == 0xe0:  # 3-byte or 4-byte
-                            if char & 0xf0 == 0xf0:  # 4-byte
-                                tst_buf += string[i:i+4].decode("utf-8")
+                    elif char & 0xC0 == 0xC0:  # 2-byte, 3-byte, or 4-byte
+                        if char & 0xE0 == 0xE0:  # 3-byte or 4-byte
+                            if char & 0xF0 == 0xF0:  # 4-byte
+                                tst_buf += string[i : i + 4].decode("utf-8")
                                 i += 3
                             else:  # 3-byte
-                                tst_buf += string[i:i+3].decode("utf-8")
+                                tst_buf += string[i : i + 3].decode("utf-8")
                                 i += 2
                         else:  # 2-byte
-                                tst_buf += string[i:i+2].decode("utf-8")
-                                i += 1
+                            tst_buf += string[i : i + 2].decode("utf-8")
+                            i += 1
                     else:
                         tst_buf += chr(char)
 
@@ -1373,4 +1337,3 @@ class TerminalBuffer:
             self._scroll_update_pending = True
         else:
             self.update_scroll_position()
-
