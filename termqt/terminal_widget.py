@@ -2,24 +2,23 @@ import logging
 import math
 from enum import Enum
 
-from PySide2.QtWidgets import QWidget, QScrollBar
+from PySide2.QtCore import QMutex, Qt, QTimer, Signal
 from PySide2.QtGui import (
-    QPainter,
     QColor,
-    QPalette,
-    QFontDatabase,
-    QPen,
     QFont,
+    QFontDatabase,
     QFontInfo,
     QFontMetrics,
-    QPixmap,
     QKeyEvent,
+    QPainter,
+    QPalette,
+    QPen,
+    QPixmap,
 )
-from PySide2.QtCore import Qt, QTimer, QMutex, Signal
-
-from .terminal_buffer import TerminalBuffer, DEFAULT_BG_COLOR, DEFAULT_FG_COLOR, ControlChar, Placeholder
+from PySide2.QtWidgets import QScrollBar, QWidget
 
 from . import terminal_buffer
+from .terminal_buffer import DEFAULT_BG_COLOR, DEFAULT_FG_COLOR, ControlChar, Placeholder, TerminalBuffer
 
 
 class CursorState(Enum):

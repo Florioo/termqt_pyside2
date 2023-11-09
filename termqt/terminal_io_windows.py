@@ -1,7 +1,9 @@
-import os
 import logging
+import os
 import threading
+
 import winpty
+
 from .terminal_io import TerminalIO
 
 

@@ -1,9 +1,9 @@
-import sys
 import logging
 import platform
-from PySide2.QtWidgets import QApplication, QWidget, QHBoxLayout, QScrollBar
-from PySide2.QtCore import Qt, QCoreApplication
+import sys
 
+from PySide2.QtCore import QCoreApplication, Qt
+from PySide2.QtWidgets import QApplication, QHBoxLayout, QScrollBar, QWidget
 from termqt import Terminal
 
 if __name__ == "__main__":

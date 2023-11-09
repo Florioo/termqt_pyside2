@@ -1,11 +1,11 @@
+from collections import deque
 from copy import deepcopy
-from typing import NamedTuple
 from enum import Enum
 from functools import partial
-from collections import deque
+from typing import NamedTuple
 
+from PySide2.QtCore import QMutex, Qt
 from PySide2.QtGui import QColor
-from PySide2.QtCore import Qt, QMutex
 
 from .colors import colors8, colors16, colors256
 

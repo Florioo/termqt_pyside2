@@ -1,11 +1,12 @@
+import logging
 import os
-import time
-import struct
 import select
 import signal
-import logging
+import struct
 import threading
+import time
 from abc import ABC, abstractmethod
+
 from .terminal_io import TerminalIO
 
 
@@ -34,8 +35,8 @@ class TerminalPOSIXIO(TerminalIO, ABC):
 
     def spawn(self):
         # Spawn the sub-process in pty.
-        import pty
         import fcntl
+        import pty
         import termios
 
         pid, fd = pty.fork()
