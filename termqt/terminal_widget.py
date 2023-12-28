@@ -175,12 +175,15 @@ class Terminal(TerminalBuffer, QWidget):
         self._painter_lock.lock()
         _qp = QPainter(self)
         _qp.setRenderHint(QPainter.Antialiasing)
+        _qp.setRenderHint(QPainter.HighQualityAntialiasing)
         _qp.drawPixmap(int(self._padding / 2), int(self._padding / 2), self._canvas)
         QWidget.paintEvent(self, event)
         self._painter_lock.unlock()
 
     def _paint_buffer(self):
         self._painter_lock.lock()
+
+        self.dpr = int(self.devicePixelRatioF())
 
         self._canvas = QPixmap(
             self.row_len * self.char_width * self.dpr, int((self.col_len + 0.2) * self.line_height * self.dpr)
