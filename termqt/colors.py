@@ -7,27 +7,26 @@ from PySide2.QtGui import QColor
 colors8 = {
     # follows xterm standard
     30: QColor(0, 0, 0),  # Black
-    31: QColor(205, 0, 0),  # Red
-    32: QColor(0, 205, 0),  # Green
-    33: QColor(205, 205, 0),  # Yellow
-    34: QColor(0, 0, 238),  # Blue
-    35: QColor(205, 0, 205),  # Magenta
-    36: QColor(0, 205, 205),  # Cyan
+    31: QColor(205, 49, 49),  # Red
+    32: QColor(13, 188, 121),  # Green
+    33: QColor(229, 229, 16),  # Yellow
+    34: QColor(36, 114, 200),  # Blue
+    35: QColor(188, 63, 188),  # Magenta
+    36: QColor(17, 168, 205),  # Cyan
     37: QColor(229, 229, 229),  # White
 }
 
 
 colors16 = {
-    30: QColor(127, 127, 127),  # Bright Black
-    31: QColor(255, 0, 0),  # Bright Red
-    32: QColor(0, 255, 0),  # Bright Green
-    33: QColor(255, 255, 0),  # Bright Yellow
-    34: QColor(92, 92, 255),  # Bright Blue
-    35: QColor(255, 0, 255),  # Magenta
-    36: QColor(0, 255, 255),  # Bright Cyan
+    30: QColor(102, 102, 102),  # Bright Black
+    31: QColor(241, 76, 76),  # Bright Red
+    32: QColor(35, 209, 139),  # Bright Green
+    33: QColor(245, 245, 67),  # Bright Yellow
+    34: QColor(	59, 142, 234),  # Bright Blue
+    35: QColor(214, 112, 214),  # Magenta
+    36: QColor(41, 184, 219),  # Bright Cyan
     37: QColor(255, 255, 255),  # Bright White
 }
-
 
 colors256 = [
     QColor(0, 0, 0),  # 0, Black
