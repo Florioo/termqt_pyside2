@@ -22,7 +22,7 @@ colors16 = {
     31: QColor(241, 76, 76),  # Bright Red
     32: QColor(35, 209, 139),  # Bright Green
     33: QColor(245, 245, 67),  # Bright Yellow
-    34: QColor(	59, 142, 234),  # Bright Blue
+    34: QColor(59, 142, 234),  # Bright Blue
     35: QColor(214, 112, 214),  # Magenta
     36: QColor(41, 184, 219),  # Bright Cyan
     37: QColor(255, 255, 255),  # Bright White
