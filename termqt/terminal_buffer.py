@@ -4,8 +4,8 @@ from enum import Enum
 from functools import partial
 from typing import NamedTuple
 
-from PySide2.QtCore import QMutex, Qt
-from PySide2.QtGui import QColor
+from qtpy.QtCore import QMutex, Qt
+from qtpy.QtGui import QColor
 
 from .colors import colors8, colors16, colors256
 

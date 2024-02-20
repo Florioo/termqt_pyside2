@@ -2,8 +2,8 @@ import logging
 import platform
 import sys
 
-from PySide2.QtCore import QCoreApplication, Qt
-from PySide2.QtWidgets import QApplication, QHBoxLayout, QScrollBar, QWidget
+from qtpy.QtCore import QCoreApplication, Qt
+from qtpy.QtWidgets import QApplication, QHBoxLayout, QScrollBar, QWidget
 from termqt import Terminal
 
 if __name__ == "__main__":

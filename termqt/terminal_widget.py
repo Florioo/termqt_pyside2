@@ -2,8 +2,8 @@ import logging
 import math
 from enum import Enum
 
-from PySide2.QtCore import QMutex, Qt, QTimer, Signal
-from PySide2.QtGui import (
+from qtpy.QtCore import QMutex, Qt, QTimer, Signal
+from qtpy.QtGui import (
     QColor,
     QFont,
     QFontDatabase,
@@ -15,7 +15,7 @@ from PySide2.QtGui import (
     QPen,
     QPixmap,
 )
-from PySide2.QtWidgets import QScrollBar, QWidget
+from qtpy.QtWidgets import QScrollBar, QWidget
 
 from . import terminal_buffer
 from .terminal_buffer import DEFAULT_BG_COLOR, DEFAULT_FG_COLOR, ControlChar, Placeholder, TerminalBuffer

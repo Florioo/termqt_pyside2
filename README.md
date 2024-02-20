@@ -14,8 +14,8 @@ in coming weeks.
 
 ## Dependencies
 
-- python 3.5+ (to get PySide2 running),
-- PySide2.
+- python 3.5+ (to get qtpy running),
+- qtpy.
 
 That's it.
 
