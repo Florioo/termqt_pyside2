@@ -6,7 +6,7 @@ from qtpy.QtGui import QColor
 
 colors8 = {
     # follows xterm standard
-    30: QColor(0, 0, 0),  # Black
+    30: QColor(130, 130, 130),  # Black
     31: QColor(205, 49, 49),  # Red
     32: QColor(13, 188, 121),  # Green
     33: QColor(229, 229, 16),  # Yellow

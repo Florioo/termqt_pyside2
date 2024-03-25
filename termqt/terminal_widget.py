@@ -2,7 +2,7 @@ import logging
 import math
 from enum import Enum
 
-from qtpy.QtCore import QMutex, Qt, QTimer, Signal
+from qtpy.QtCore import  Qt, QTimer, Signal,QRecursiveMutex
 from qtpy.QtGui import (
     QColor,
     QFont,
@@ -66,7 +66,7 @@ class Terminal(TerminalBuffer, QWidget):
         # we paint everything to the pixmap first then paint this pixmap
         # on paint event. This allows us to partially update the canvas.
         self._canvas = QPixmap(width, height)
-        self._painter_lock = QMutex(QMutex.Recursive)
+        self._painter_lock = QRecursiveMutex()
 
         self._width = width
         self._height = height
@@ -97,7 +97,7 @@ class Terminal(TerminalBuffer, QWidget):
         self.total_repaint_sig.connect(self._canvas_repaint)
 
         # intializing blinking cursor
-        self._cursor_blinking_lock = QMutex()
+        self._cursor_blinking_lock = QRecursiveMutex()
         self._cursor_blinking_state = CursorState.ON
         self._cursor_blinking_elapse = 0
         self._cursor_blinking_timer = QTimer()
@@ -122,14 +122,15 @@ class Terminal(TerminalBuffer, QWidget):
         self.default_bg = color
         terminal_buffer.DEFAULT_BG_COLOR = color
         pal = self.palette()
-        pal.setColor(QPalette.Background, color)
+        pal.setColor(QPalette.ColorRole.Window, color)
+        
         self.setPalette(pal)
 
     def set_fg(self, color: QColor):
         TerminalBuffer.set_fg(self, color)
 
         pal = self.palette()
-        pal.setColor(QPalette.Foreground, color)
+        pal.setColor(QPalette.ColorRole.WindowText, color)
         self.setPalette(pal)
 
     def set_font(self, font: QFont = None):
@@ -175,7 +176,6 @@ class Terminal(TerminalBuffer, QWidget):
         self._painter_lock.lock()
         _qp = QPainter(self)
         _qp.setRenderHint(QPainter.Antialiasing)
-        _qp.setRenderHint(QPainter.HighQualityAntialiasing)
         _qp.drawPixmap(int(self._padding / 2), int(self._padding / 2), self._canvas)
         QWidget.paintEvent(self, event)
         self._painter_lock.unlock()
